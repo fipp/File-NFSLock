@@ -209,8 +209,11 @@ sub new {
           $content .= $line;          # Save valid locks
         }
 
+        ### Untaint $content
+        ($content) = ($content =~ /\A(.*)\z/);
+
         ### Save any valid locks or wipe file.
-        if( length($content) ){
+        if( defined($content) && length($content) ){
           seek     $fh, 0, 0;
           print    $fh $content;
           truncate $fh, length($content);
@@ -410,8 +413,11 @@ sub do_unlock_shared ($) {
     $content .= $line;
   }
 
+  ### Untaint $content
+  ($content) = ($content =~ /\A(.*)\z/);
+
   ### other shared locks exist
-  if( length($content) ){
+  if( defined($content) && length($content) ){
     seek     $fh, 0, 0;
     print    $fh $content;
     truncate $fh, length($content);
